@@ -1,0 +1,197 @@
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import * as Yup from "yup";
+import axios from "axios";
+import "./signUp.css";
+const initialValues = {
+  name: "",
+  email: "",
+  password: "",
+  phonenumber: "",
+  ConfrimPassword: "",
+  gender: "",
+};
+
+const onSubmit = (value) => {
+  console.log(value);
+};
+
+// const validate = (values) => {
+//   const errors = {};
+//   if (!values.name) errors.name = " name not required";
+//   if (!values.email) errors.email = " email not required";
+//   if (!values.password) errors.password = " password not required";
+//   return errors;
+// };
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("name is not required"),
+  email: Yup.string().email("email was invalid").required("email not required"),
+  phonenumber: Yup.string()
+    .matches(/^[0-9]{11}/, "phone number invalid")
+    .required("phone number not required"),
+  password: Yup.string().required("password was not required"),
+  ConfrimPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "password must be matched")
+    .required("password confrim not required"),
+  gender: Yup.string().required("gender not required"),
+});
+
+const SignUp = () => {
+  const [users, setUsers] = useState();
+  
+  const formik = useFormik({
+    initialValues : users || initialValues,
+    onSubmit,
+    validationSchema,
+    validateOnMount: true,
+    enableReinitialize : true,
+  });
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/users/1")
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+  return (
+    <div className="signup">
+      <form onSubmit={formik.handleSubmit} className="forms">
+        <div className="forms-content">
+          <input
+            className={
+              formik.errors.name
+                ? "form-control "
+                : "form-control control-isvalid"
+            }
+            type="text"
+            name="name"
+            {...formik.getFieldProps("name")}
+          />
+          <label
+            className={''}            
+          >
+            Name
+          </label>
+          {formik.errors.name && formik.touched.name && (
+            <p>{formik.errors.name}</p>
+          )}
+        </div>
+        <div className="forms-content">
+          <input
+            className={
+              formik.errors.email
+                ? "form-control "
+                : "form-control control-isvalid"
+            }
+            type="text"
+            name="email"
+            {...formik.getFieldProps("email")}
+          />
+          <label
+            
+          >
+            Email
+          </label>
+          {formik.errors.email && formik.touched.email && (
+            <p>{formik.errors.email}</p>
+          )}
+        </div>
+        <div className="forms-content">
+          <input
+            className={
+              formik.errors.phonenumber
+                ? "form-control "
+                : "form-control control-isvalid"
+            }
+            type="text"
+            name="phonenumber"
+            {...formik.getFieldProps("phonenumber")}
+          />
+          <label
+            
+          >
+            Phone Number
+          </label>
+          {formik.errors.phonenumber && formik.touched.phonenumber && (
+            <p>{formik.errors.phonenumber}</p>
+          )}
+        </div>
+        <div className="forms-content">
+          <input
+            className={
+              formik.errors.password
+                ? "form-control "
+                : "form-control control-isvalid"
+            }
+            type="text"
+            name="password"
+            {...formik.getFieldProps("password")}
+          />
+          <label
+            
+          >
+            Password
+          </label>
+          {formik.errors.password && formik.touched.password && (
+            <p>{formik.errors.password}</p>
+          )}
+        </div>
+        <div className="forms-content">
+          <input
+            className={
+              formik.errors.ConfrimPassword
+                ? "form-control "
+                : "form-control control-isvalid"
+            }
+            type="text"
+            name="ConfrimPassword"
+            {...formik.getFieldProps("ConfrimPassword")}
+          />
+          <label
+            
+          >
+            Confrim Password
+          </label>
+          {formik.errors.ConfrimPassword && formik.touched.ConfrimPassword && (
+            <p>{formik.errors.ConfrimPassword}</p>
+          )}
+        </div>
+        <div className="radiogroup">
+          <h4>Please Select the Gender :</h4>
+          <div>
+            <input
+              type="radio"
+              id="male"
+              name="gender"
+              value="0"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              checked={formik.values.gender === 0 ? true : false}
+            />
+            <label htmlFor="male">Male</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              id="fmale"
+              name="gender"
+              value="1"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              checked={formik.values.gender === 1 ? true : false}
+            />
+            <label htmlFor="fmale">Fmale</label>
+          </div>
+          {formik.errors.gender && formik.touched.gender && (
+            <p>{formik.errors.gender}</p>
+          )}
+        </div>
+        <button type="submit" disabled={!formik.isValid}>
+          Add
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default SignUp;

@@ -1,0 +1,7 @@
+yup 
+
+for phone number => yup.string().required('feellaan').matches(/^[0-9]{11}/'Invalid phone number').nullable(),
+
+for password confrim => yup.string().required('').oneOf([yup.ref('password'), null] , "password not matches")
+
+how to set specifict charecter in yup search on google 
